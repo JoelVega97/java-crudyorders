@@ -24,4 +24,13 @@ public class OrdersController {
         return new ResponseEntity<>(rtnGet, HttpStatus.OK);
     }
 
+    //POST http://localhost:2019/orders/order
+
+
+    //PUT http://localhost:2019/orders/order/63
+
+
+    //DELETE http://localhost:2019/orders/order/58
+
+
 }

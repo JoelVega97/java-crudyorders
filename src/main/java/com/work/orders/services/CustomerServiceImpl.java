@@ -42,4 +42,15 @@ public class CustomerServiceImpl implements CustomerServices {
         List<Customers> rtnList = cstrepo.findByCustnameContainingIgnoringCase(subname);
         return rtnList;
     }
+
+    @Transactional
+    @Override
+    public void delete(long id) {
+        if (cstrepo.findById(id).isPresent()){
+            cstrepo.deleteById(id);
+        }else{
+            throw new EntityNotFoundException("Customer " + id +" Not Found!");
+        }
+    }
+
 }

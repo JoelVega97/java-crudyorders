@@ -6,10 +6,7 @@ import com.work.orders.services.CustomerServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,5 +39,22 @@ public class CustomerController {
     }
     //http://localhost:2019/customers/namelike/cin EMPTY ARR
 
+    //POST http://localhost:2019/customers/customer
+
+    //PUT http://localhost:2019/customers/customer/19
+
+    //PATCH http://localhost:2019/customers/customer/19
+    @PatchMapping(value = "customer/{custid}", consumes = {"application/json"})
+    public ResponseEntity<?> updateCustomerById(@PathVariable long custid, @RequestBody Customers updateCustomer){
+        cstmrsrvcs.update(updateCustomer, custid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //DELETE http://localhost:2019/customers/customer/54
+    @DeleteMapping(value = "/customer/{custid}")
+    public ResponseEntity<?> deleteCustomerById(@PathVariable long custid){
+        cstmrsrvcs.delete(custid);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 }
