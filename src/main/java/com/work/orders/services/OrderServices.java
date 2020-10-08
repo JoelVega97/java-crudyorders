@@ -7,4 +7,6 @@ public interface OrderServices {
     Orders save(Orders orders);
 
     Orders findOrderById(long orderid);
+
+    void delete(long ordnum);
 }

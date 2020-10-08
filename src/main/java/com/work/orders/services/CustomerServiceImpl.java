@@ -27,7 +27,6 @@ public class CustomerServiceImpl implements CustomerServices {
     @Override
     public Customers save(Customers customers) {
         Customers newCustomer = new Customers();
-
         if(customers.getCustcode() != 0){
             cstrepo.findById(customers.getCustcode())
                     .orElseThrow(() -> new EntityNotFoundException("Customer " + customers.getCustcode() + " does not exist"));
@@ -63,6 +62,7 @@ public class CustomerServiceImpl implements CustomerServices {
         return cstrepo.save(customers);
     }
 
+
     @Override
     public List<Customers> findAllCustomers() {
         List<Customers> list = new ArrayList<>();
@@ -94,8 +94,76 @@ public class CustomerServiceImpl implements CustomerServices {
     }
 
     @Override
-    public Customers update(Customers customer, long id) {
-        return null;
+    public Customers update(Customers customers, long id) {
+        Customers updateCustomer = cstrepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer " + id +" Not Found!"));
+
+        if(customers.getCustname() != null){
+            updateCustomer.setCustname(customers.getCustname());
+        }
+
+        if(customers.getCustcity() != null){
+            updateCustomer.setCustcity(customers.getCustcity());
+        }
+
+        if(customers.getWorkingarea() != null){
+            updateCustomer.setWorkingarea(customers.getWorkingarea());
+        }
+
+        if(customers.getCustcountry() != null){
+            updateCustomer.setCustcountry(customers.getCustcountry());
+        }
+
+        if(customers.getGrade() != null){
+            updateCustomer.setGrade(customers.getGrade());
+        }
+
+        if(customers.hasvalueforopeningamt){
+            updateCustomer.setOpeningamt(customers.getOpeningamt());
+        }
+
+        if(customers.hasvalueforreceiveamt){
+            updateCustomer.setReceiveamt(customers.getReceiveamt());
+        }
+
+        if(customers.hasvalueforpaymentamt){
+            updateCustomer.setPaymentamt(customers.getPaymentamt());
+        }
+
+        if(customers.hasvalueforoutstandingamt){
+            updateCustomer.setOutstandingamt(customers.getOutstandingamt());
+        }
+
+        if(customers.getPhone() != null){
+            updateCustomer.setPhone(customers.getPhone());
+        }
+
+        if(customers.getAgent() != null){
+            updateCustomer.setAgent(customers.getAgent());
+        }
+
+        if(customers.getOrdersList().size() > 0){
+        updateCustomer.getOrdersList().clear();
+        for(Orders o : customers.getOrdersList()){
+            Orders updateOrder = new Orders();
+            updateOrder.setOrdamount(o.getOrdamount());
+            updateOrder.setAdvanceamount(o.getAdvanceamount());
+            updateOrder.setOrderdescription(o.getOrderdescription());
+
+            if (updateOrder.getPayments().size() > 0){
+            updateOrder.getPayments().clear();
+            for(Payments p : o.getPayments()){
+                Payments newPay = pmntrepo.findById(p.getPaymentid())
+                        .orElseThrow(() -> new EntityNotFoundException("Payment "+ p.getPaymentid() +" Not Found"));
+                updateOrder.getPayments().add(newPay);
+            }
+
+            }
+        }
+
+        }
+
+        return cstrepo.save(customers);
     }
 
 }

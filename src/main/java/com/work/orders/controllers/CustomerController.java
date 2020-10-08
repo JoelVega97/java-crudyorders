@@ -4,11 +4,14 @@ package com.work.orders.controllers;
 import com.work.orders.models.Customers;
 import com.work.orders.services.CustomerServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -47,7 +50,13 @@ public class CustomerController {
     public ResponseEntity addCustomer(@Valid @RequestBody Customers newCustomer){
         newCustomer.setCustcode(0);
         newCustomer = cstmrsrvcs.save(newCustomer);
-        return new ResponseEntity(HttpStatus.CREATED);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        URI newRestaurantURI = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{restid}")
+                .buildAndExpand(newCustomer.getCustcode())
+                .toUri();
+        responseHeaders.setLocation(newRestaurantURI);
+        return new ResponseEntity<>(responseHeaders, HttpStatus.CREATED);
     }
 
     //PUT http://localhost:2019/customers/customer/19
