@@ -1,7 +1,10 @@
 package com.work.orders.services;
 
 import com.work.orders.models.Customers;
+import com.work.orders.models.Orders;
+import com.work.orders.models.Payments;
 import com.work.orders.repositories.CustomersRepo;
+import com.work.orders.repositories.PaymentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,46 @@ public class CustomerServiceImpl implements CustomerServices {
     @Autowired
     CustomersRepo cstrepo;
 
+    @Autowired
+    PaymentRepo pmntrepo;
+
     @Transactional
     @Override
     public Customers save(Customers customers) {
+        Customers newCustomer = new Customers();
+
+        if(customers.getCustcode() != 0){
+            cstrepo.findById(customers.getCustcode())
+                    .orElseThrow(() -> new EntityNotFoundException("Customer " + customers.getCustcode() + " does not exist"));
+            newCustomer.setCustcode(customers.getCustcode());
+        }
+
+        newCustomer.setCustname(customers.getCustname());
+        newCustomer.setCustcity(customers.getCustcity());
+        newCustomer.setWorkingarea(customers.getWorkingarea());
+        newCustomer.setCustcountry(customers.getCustcountry());
+        newCustomer.setGrade(customers.getGrade());
+        newCustomer.setOpeningamt(customers.getOpeningamt());
+        newCustomer.setReceiveamt(customers.getReceiveamt());
+        newCustomer.setPaymentamt(customers.getPaymentamt());
+        newCustomer.setOutstandingamt(customers.getOutstandingamt());
+        newCustomer.setPhone(customers.getPhone());
+        newCustomer.setAgent(customers.getAgent());
+
+        newCustomer.getOrdersList().clear();
+        for(Orders o : customers.getOrdersList()){
+            Orders newOrder = new Orders();
+            newOrder.setOrdamount(o.getOrdamount());
+            newOrder.setAdvanceamount(o.getAdvanceamount());
+            newOrder.setOrderdescription(o.getOrderdescription());
+
+            newOrder.getPayments().clear();
+            for(Payments p : o.getPayments()){
+                Payments newPay = pmntrepo.findById(p.getPaymentid())
+                        .orElseThrow(() -> new EntityNotFoundException("Payment "+ p.getPaymentid() +" Not Found"));
+                newOrder.getPayments().add(newPay);
+            }
+        }
         return cstrepo.save(customers);
     }
 
@@ -51,6 +91,11 @@ public class CustomerServiceImpl implements CustomerServices {
         }else{
             throw new EntityNotFoundException("Customer " + id +" Not Found!");
         }
+    }
+
+    @Override
+    public Customers update(Customers customer, long id) {
+        return null;
     }
 
 }

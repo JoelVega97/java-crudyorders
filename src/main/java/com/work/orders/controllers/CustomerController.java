@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -40,11 +41,29 @@ public class CustomerController {
     //http://localhost:2019/customers/namelike/cin EMPTY ARR
 
     //POST http://localhost:2019/customers/customer
+    @PostMapping(value = "/customer",
+            produces = {"application/json"},
+            consumes = {"application/json"})
+    public ResponseEntity addCustomer(@Valid @RequestBody Customers newCustomer){
+        newCustomer.setCustcode(0);
+        newCustomer = cstmrsrvcs.save(newCustomer);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 
     //PUT http://localhost:2019/customers/customer/19
-
+    @PutMapping(value = "/customer/{custid}",
+            produces = {"application/json"},
+            consumes = {"application/json"})
+    public ResponseEntity<?> replaceCustomerById(
+            @PathVariable long custid,
+            @Valid
+            @RequestBody Customers updatedCustomer){
+        updatedCustomer.setCustcode(custid);
+        updatedCustomer = cstmrsrvcs.save(updatedCustomer);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     //PATCH http://localhost:2019/customers/customer/19
-    @PatchMapping(value = "customer/{custid}", consumes = {"application/json"})
+    @PatchMapping(value = "/customer/{custid}", consumes = {"application/json"})
     public ResponseEntity<?> updateCustomerById(@PathVariable long custid, @RequestBody Customers updateCustomer){
         cstmrsrvcs.update(updateCustomer, custid);
         return new ResponseEntity<>(HttpStatus.OK);
